@@ -41,7 +41,12 @@ public class UIMgr : Singleton<UIMgr>
         _define = new UIDefine();
     }
 
-    public void ShowPanel(UIType type)
+    public void ShowPanel(UIType type, object data)
+    {
+ 
+    }
+
+    public void ShowPanel(UIType type, object data = null, params object[] objs)
     {
         UIPanel panel;
         // 1、是否显示中
@@ -54,14 +59,14 @@ public class UIMgr : Singleton<UIMgr>
         if (_allPanels.TryGetValue(type, out panel))
         {
             _displayPanels.Add(type, panel);
-            panel.Display();
+            panel.OnEnter(data, objs);
             return;
         }
         // 3、需要加载
         panel = LoadPanel(type);
         if (panel != null)
         {
-            panel.Display();
+            panel.OnEnter(data, objs);
             //panel.RefreshView();
         }
     }

@@ -6,19 +6,19 @@ namespace UIFrame
 {
     public class UIPanel : UIItem
     {
+        protected object data;
+        protected object[] dataArray;
         public UIPanel() { }
         public UIPanel(GameObject go):base(go) { }
 
-        public virtual void OnEnter()
+        public virtual void OnEnter(object data = null, params object[] objs)
         {
+            this.data = data;
+            dataArray = objs;
             InitView();
         }
 
         public virtual void InitView(){ }
-        public virtual void Display()
-        {
-            _gameObject.SetActive(true);
-        }
         public virtual void Hide()
         {
             _gameObject.SetActive(false);
