@@ -41,28 +41,47 @@ public class UIMgr : Singleton<UIMgr>
         _define = new UIDefine();
     }
 
-
-
-    public void ShowPanel(string panelName)
+    public void ShowPanel(UIType type)
     {
         UIPanel panel;
         // 1、是否显示中
-        if (_displayPanels.TryGetValue(panelName, out panel))
+        if (_displayPanels.TryGetValue(type, out panel))
         {
             // 显示中
             return;
         }
         // 2、是否缓存
-        if (_allPanels.TryGetValue(panelName, out panel))
+        if (_allPanels.TryGetValue(type, out panel))
         {
+            _displayPanels.Add(type, panel);
             panel.Display();
             return;
         }
         // 3、需要加载
+        panel = LoadPanel(type);
+        if (panel != null)
+        {
+            panel.Display();
+            //panel.RefreshView();
+        }
     }
 
-    public void LoadPanel()
+    public UIPanel LoadPanel(UIType type)
     {
-
+        UIConfig config;
+        if (_define.type2configDict.TryGetValue(type, out config))
+        {
+            GameObject prefab = ResMgr.Instance.Load(config.prefabPath);
+            UIPanel panel = System.Activator.CreateInstance(System.Type.GetType(config.scriptName)) as UIPanel;
+            if (panel == null)
+            {
+                // TODO log支持
+                return null;
+            }
+            panel.InitSkin(prefab);
+            return panel;
+        }
+        // TODO log支持
+        return null;
     }
 }

@@ -27,11 +27,19 @@ namespace UIFrame
         /// </summary>
         protected List<UIItem> _items;
 
+        public UIItem() { }
         public UIItem(GameObject go)
         {
+            InitSkin(go);
+        }
+
+        public void InitSkin(GameObject go) { 
             _gameObject = go;
             _transform = go.transform;
+            OnLoad();
         }
+
+        public virtual void OnLoad() { }
 
         public virtual void OnDestroy()
         {

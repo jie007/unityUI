@@ -6,6 +6,7 @@ namespace UIFrame
 {
     public class UIPanel : UIItem
     {
+        public UIPanel() { }
         public UIPanel(GameObject go):base(go) { }
 
         public virtual void OnEnter()
