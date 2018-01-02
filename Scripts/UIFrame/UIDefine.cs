@@ -12,7 +12,7 @@ namespace UIFrame
             _type2configDict = new Dictionary<UIType, UIConfig>();
             Init();
         }
-        private void RegisterUI(UIType type, string prefabPath, string scriptName)
+        private void RegisterUI(UIType type, string prefabPath, string scriptName, UIPanleType panelType = UIPanleType.eFrame)
         {
             UIConfig config;
             if (!_type2configDict.TryGetValue(type, out config))
@@ -27,7 +27,7 @@ namespace UIFrame
         }
         private void Init()
         {
-            RegisterUI(UIType.eLogin, "prefabPath", "LoginPanel");
+            RegisterUI(UIType.eLogin, "prefabPath", "LoginPanel", UIPanleType.eWindow);
         }
     }
 

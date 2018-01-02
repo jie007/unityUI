@@ -3,6 +3,6 @@ using System.Collections.Generic;
 
 public interface IView
 {
-    List<string> 
+    List<string> InterestNotifications();
     void OnHandlerNotification(INotification notification);
 }

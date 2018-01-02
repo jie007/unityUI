@@ -33,11 +33,14 @@ namespace UIFrame
             InitSkin(go);
         }
 
-        public void InitSkin(GameObject go) { 
+        public virtual void InitSkin(GameObject go) { 
             _gameObject = go;
             _transform = go.transform;
             OnLoad();
         }
+
+        public virtual void Display() { if (_gameObject) _gameObject.SetActive(true); }
+        public virtual void Hide() { if (_gameObject) _gameObject.SetActive(false); }
 
         public virtual void OnLoad() { }
 

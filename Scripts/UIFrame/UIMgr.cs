@@ -41,37 +41,76 @@ public class UIMgr : Singleton<UIMgr>
         _define = new UIDefine();
     }
 
-    public void ShowPanel(UIType type, object data)
+    public void ShowPanel(UIType type)
     {
- 
+        ShowPanel(type, null, UIPanleType.eFrame);
     }
 
-    public void ShowPanel(UIType type, object data = null, params object[] objs)
+    public void ShowPanel(UIType type, object data = null)
     {
-        UIPanel panel;
-        // 1、是否显示中
-        if (_displayPanels.TryGetValue(type, out panel))
+        ShowPanel(type, data, UIPanleType.eFrame);
+    }
+
+    public void ShowPanel(UIType type, UIPanleType panelType = UIPanleType.eFrame)
+    {
+        ShowPanel(type, null, panelType);
+    }
+
+    public void ShowPanel(UIType type, object data = null, UIPanleType panelType = UIPanleType.eFrame, params object[] objs)
+    {
+        UIPanel panel = null;
+        if (panelType == UIPanleType.eFrame)
         {
-            // 显示中
-            return;
+            // 1、是否显示中
+            if (_displayPanels.TryGetValue(type, out panel))
+            {
+                // 显示中
+                return;
+            }
+            // 2、是否缓存
+            if (!_allPanels.TryGetValue(type, out panel))
+            {
+                // 3、需要加载
+                panel = LoadPanel(type, panelType);
+            }
+            if (panel != null) _displayPanels.Add(type, panel);
         }
-        // 2、是否缓存
-        if (_allPanels.TryGetValue(type, out panel))
+        else if (panelType == UIPanleType.eWindow)
         {
-            _displayPanels.Add(type, panel);
-            panel.OnEnter(data, objs);
-            return;
+            if (!_allPanels.TryGetValue(type, out panel))
+            {
+                panel = LoadPanel(type, panelType);
+            }
+            if (panel != null) _popStack.Push(panel);
         }
-        // 3、需要加载
-        panel = LoadPanel(type);
+
         if (panel != null)
         {
             panel.OnEnter(data, objs);
+            panel.Display();
             //panel.RefreshView();
         }
     }
 
-    public UIPanel LoadPanel(UIType type)
+    public void DestroyPanel(UIType type)
+    {
+        UIPanel panel = null;
+        // 1、是否显示中
+        if (panel.PanelType == UIPanleType.eFrame)
+        {
+            if (_displayPanels.TryGetValue(type, out panel))
+            {
+                _displayPanels.Remove(type);
+            }
+        }
+        else if (panel.PanelType == UIPanleType.eWindow)
+        {
+            if (_popStack.Count > 0) panel = _popStack.Pop();
+        }
+        if (panel != null) panel.OnDestroy();
+    }
+
+    public UIPanel LoadPanel(UIType type, UIPanleType panelType)
     {
         UIConfig config;
         if (_define.type2configDict.TryGetValue(type, out config))
@@ -83,7 +122,8 @@ public class UIMgr : Singleton<UIMgr>
                 // TODO log支持
                 return null;
             }
-            panel.InitSkin(prefab);
+            prefab.SetActive(false);
+            panel.Init(prefab, type, panelType);
             return panel;
         }
         // TODO log支持
